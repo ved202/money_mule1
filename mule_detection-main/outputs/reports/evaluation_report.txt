@@ -1,0 +1,29 @@
+======================================================================
+  MULE DETECTION SYSTEM — EVALUATION REPORT
+======================================================================
+
+── MODEL PERFORMANCE (test set) ──────────────────────────
+           Model  Precision  Recall     F1  PR-AUC  ROC-AUC
+ IsolationForest     0.4030  0.4030 0.4030  0.3688   0.8771
+    RandomForest     0.9895  0.8745 0.9285  0.9893   0.9966
+GradientBoosting     0.9920  0.8733 0.9288  0.9902   0.9970
+        GNN-SAGE     0.9996  1.0000 0.9998  1.0000   1.0000
+
+── RECOMMENDED MODEL ─────────────────────────────────────
+  Best validation model : GNN-SAGE (PR-AUC=1.0000, ROC-AUC=1.0000)
+  Recommendation        : Use this as the primary fraud detector on PaySim.
+
+── EARLY DETECTION (Objective 2) ────────────────────────
+  Total mule accounts      : 16,382
+  Caught at early stage    : 16,381
+  Early Detection Gain     : 99.99%
+  Stage distribution       : {'Activation': 8213, 'Recruitment': 8168, 'Dormant': 1}
+  Status                   : heuristic
+  Interpretation           : Treat lifecycle output as heuristic until separately validated.
+
+── COMMUNITY DETECTION ──────────────────────────────────
+  Suspicious communities   : 1,084
+  Community recall         : 13.50%
+
+── SUSPICIOUS ACCOUNT SUMMARY ───────────────────────────
+  Total suspicious accounts: 17,896

@@ -1,0 +1,5 @@
+# Large / generated artifacts (keep locally, don't push)
+/archive/*.csv
+/mule_detection-main/data/processed/
+/mule_detection-main/outputs/models/
+
