@@ -1,4 +1,4 @@
-﻿"""
+"""
 src/visualization/visualizer.py
 ================================
 All visualisation functions for the mule detection system.
@@ -368,6 +368,13 @@ def plot_temporal_drift(
             ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
             ax.tick_params(axis="x", rotation=35)
             ax.legend(frameon=False, fontsize=9)
+        
+        # Force both plots to have the same 6-month x-axis
+        if not df.empty and "timestamp" in df.columns:
+            min_ts = pd.to_datetime(df["timestamp"]).min()
+            max_ts = pd.to_datetime(df["timestamp"]).max()
+            ax.set_xlim([min_ts - pd.Timedelta(days=5), max_ts + pd.Timedelta(days=5)])
+            
         ax.set_title(title, fontsize=11, fontweight="bold")
         ax.set_xlabel("Date")
         ax.set_ylabel("Transactions sent")
