@@ -299,8 +299,8 @@ def plot_model_comparison(
 
 def plot_lifecycle_distribution(lifecycle_df: pd.DataFrame, save: bool = True):
     print("\nPlotting lifecycle stage distribution...")
-    stage_order  = ["Dormant", "Recruitment", "Activation", "Laundering", "Exit", "Normal"]
-    stage_colors = ["#B4B2A9", "#85B7EB", "#EF9F27", "#E24B4A", "#888780", "#9FE1CB"]
+    stage_order  = ["Dormant", "Recruitment", "Activation", "Laundering", "Exit"]
+    stage_colors = ["#B4B2A9", "#85B7EB", "#EF9F27", "#E24B4A", "#888780"]
 
     if "is_fraud" in lifecycle_df.columns:
         mule_counts = lifecycle_df[lifecycle_df["is_fraud"] == 1][
