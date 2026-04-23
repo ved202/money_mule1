@@ -10,7 +10,7 @@ each account in isolation. GNNs additionally consider the NEIGHBOURHOOD:
 a mule account surrounded by other mules looks different from an identical
 account surrounded by normal accounts.
 
-This is called "guilt by association" — the graph structure itself is a signal.
+This is called "guilt by association" - the graph structure itself is a signal.
 
 Two architectures implemented
 ------------------------------
@@ -20,7 +20,7 @@ Two architectures implemented
    - Uses mean/max/LSTM aggregators
    - Best for: large graphs where full neighbourhood is expensive
 
-2. GAT — Graph Attention Network (Veličković et al. 2018)
+2. GAT - Graph Attention Network (Velickovic et al. 2018)
    - Learns attention weights: WHICH neighbours matter most
    - A mule's suspicious neighbours get higher attention weight
    - More expressive but slower than SAGE
@@ -45,7 +45,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from config.config import *
 
-# ── Torch availability guard ──────────────────────────────────────────────────
+# -- Torch availability guard --------------------------------------------------
 try:
     import torch
     import torch.nn.functional as F
@@ -64,9 +64,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 # MODEL ARCHITECTURES
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 
 if TORCH_AVAILABLE:
 
@@ -76,13 +76,13 @@ if TORCH_AVAILABLE:
 
         Architecture:
             Input (F features)
-            → SAGEConv(F, 128) + BatchNorm + ReLU + Dropout
-            → SAGEConv(128, 64) + BatchNorm + ReLU + Dropout
-            → SAGEConv(64, 32)  + ReLU
-            → Linear(32, 2)     → class logits
+            -> SAGEConv(F, 128) + BatchNorm + ReLU + Dropout
+            -> SAGEConv(128, 64) + BatchNorm + ReLU + Dropout
+            -> SAGEConv(64, 32)  + ReLU
+            -> Linear(32, 2)     -> class logits
 
         Each SAGEConv layer:
-            h_v = W · CONCAT(h_v, MEAN({h_u : u ∈ N(v)}))
+            h_v = W * CONCAT(h_v, MEAN({h_u : u in N(v)}))
         """
 
         def __init__(self, in_channels: int, hidden1: int = 128,
@@ -128,17 +128,17 @@ if TORCH_AVAILABLE:
 
         Architecture:
             Input (F features)
-            → GATConv(F, 64, heads=8, concat=True)  → 512 dim
-            → ELU + Dropout
-            → GATConv(512, 32, heads=4, concat=True) → 128 dim
-            → ELU + Dropout
-            → Linear(128, 2) → class logits
+            -> GATConv(F, 64, heads=8, concat=True)  -> 512 dim
+            -> ELU + Dropout
+            -> GATConv(512, 32, heads=4, concat=True) -> 128 dim
+            -> ELU + Dropout
+            -> Linear(128, 2) -> class logits
 
         Each GATConv layer learns:
-            α_ij = softmax( LeakyReLU( a^T [W h_i || W h_j] ) )
-            h'_i  = σ( Σ_j α_ij W h_j )
+            alpha_ij = softmax( LeakyReLU( a^T [W h_i || W h_j] ) )
+            h'_i  = sigma( Sigma_j alpha_ij W h_j )
 
-        The attention weights α_ij tell us which neighbours
+        The attention weights alpha_ij tell us which neighbours
         most influence each account's classification.
         """
 
@@ -175,9 +175,9 @@ if TORCH_AVAILABLE:
                 return F.softmax(logits, dim=1)[:, 1], emb
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 # DATA PREPARATION
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 
 def prepare_pyg_data(
     feature_matrix: pd.DataFrame,
@@ -192,12 +192,12 @@ def prepare_pyg_data(
     -------
     data        : PyG Data(x, edge_index, y, train_mask, val_mask, test_mask)
     scaler      : fitted StandardScaler (for inference)
-    account_idx : {account_name → integer_node_id}
+    account_idx : {account_name -> integer_node_id}
     """
     if not TORCH_AVAILABLE:
         raise ImportError("torch and torch_geometric are required for GNN training.")
 
-    # ── Node ordering: sort feature matrix by account name ────────────────────
+    # -- Node ordering: sort feature matrix by account name --------------------
     fm = feature_matrix.copy()
     if "account" not in fm.columns:
         fm = fm.reset_index()
@@ -205,17 +205,17 @@ def prepare_pyg_data(
     fm          = fm.sort_values("account").reset_index(drop=True)
     account_idx = {acc: i for i, acc in enumerate(fm["account"].tolist())}
 
-    # ── Node feature matrix ───────────────────────────────────────────────────
+    # -- Node feature matrix ---------------------------------------------------
     available   = [c for c in feat_cols if c in fm.columns]
     scaler      = StandardScaler()
     X_np        = scaler.fit_transform(fm[available].fillna(0).values.astype(np.float32))
     x           = torch.tensor(X_np, dtype=torch.float)
 
-    # ── Labels ────────────────────────────────────────────────────────────────
+    # -- Labels ----------------------------------------------------------------
     y_np = fm["is_fraud"].fillna(0).astype(int).values
     y    = torch.tensor(y_np, dtype=torch.long)
 
-    # ── Edge index (sender → receiver) ───────────────────────────────────────
+    # -- Edge index (sender -> receiver) ---------------------------------------
     src_ids, dst_ids = [], []
     for row in df_transactions.itertuples(index=False):
         s = account_idx.get(row.sender_account)
@@ -226,7 +226,7 @@ def prepare_pyg_data(
 
     edge_index = torch.tensor([src_ids, dst_ids], dtype=torch.long)
 
-    # ── Train / val / test masks (prefer stratified when labels permit) ──────
+    # -- Train / val / test masks (prefer stratified when labels permit) ------
     n = len(fm)
     all_idx = np.arange(n)
     y_np = y.numpy()
@@ -276,9 +276,9 @@ def prepare_pyg_data(
     return data, scaler, account_idx
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 # TRAINING LOOP
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 
 def train_gnn(
     feature_matrix:  pd.DataFrame,
@@ -310,30 +310,30 @@ def train_gnn(
     dict with keys: model, scaler, account_idx, data, results, proba_series
     """
     if not TORCH_AVAILABLE:
-        print("\n  [GNN] torch/torch_geometric not installed — skipping GNN.")
+        print("\n  [GNN] torch/torch_geometric not installed - skipping GNN.")
         print("  Install with: pip install torch torch_geometric")
         return {}
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"\n{'─'*55}")
+    print(f"\n{'-'*55}")
     print(f"  Training {model_type.upper()} GNN on {device}")
-    print(f"{'─'*55}")
+    print(f"{'-'*55}")
 
-    # ── Prepare data ──────────────────────────────────────────────────────────
+    # -- Prepare data ----------------------------------------------------------
     data, scaler, account_idx = prepare_pyg_data(
         feature_matrix, df_transactions, feat_cols
     )
     data = data.to(device)
     in_channels = data.num_node_features
 
-    # ── Class weights for imbalance ────────────────────────────────────────────
+    # -- Class weights for imbalance --------------------------------------------
     n_mule   = int(data.y.sum().item())
     n_normal = data.num_nodes - n_mule
     w_mule   = n_normal / max(n_mule, 1)
     class_w  = torch.tensor([1.0, w_mule], dtype=torch.float).to(device)
-    print(f"  Class weight for mule: {w_mule:.1f}×")
+    print(f"  Class weight for mule: {w_mule:.1f}x")
 
-    # ── Model ─────────────────────────────────────────────────────────────────
+    # -- Model -----------------------------------------------------------------
     torch.manual_seed(RANDOM_STATE)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(RANDOM_STATE)
@@ -352,7 +352,7 @@ def train_gnn(
         optimizer, mode="max", patience=10, factor=0.5, min_lr=1e-5
     )
 
-    # ── Training ──────────────────────────────────────────────────────────────
+    # -- Training --------------------------------------------------------------
     def train_step():
         model.train()
         optimizer.zero_grad()
@@ -385,7 +385,7 @@ def train_gnn(
     history     = {"loss": [], "val_ap": [], "val_roc": []}
 
     print(f"\n  Epoch  Loss     Val-PR-AUC  Val-ROC-AUC")
-    print(f"  {'─'*45}")
+    print(f"  {'-'*45}")
 
     for epoch in range(1, n_epochs + 1):
         loss = train_step()
@@ -402,7 +402,7 @@ def train_gnn(
                 best_val_ap = val_ap
                 best_state  = {k: v.clone() for k, v in model.state_dict().items()}
                 no_improve  = 0
-                marker      = " ← best"
+                marker      = " <- best"
             else:
                 no_improve += 1
 
@@ -415,19 +415,19 @@ def train_gnn(
                       f"(best val PR-AUC = {best_val_ap:.4f})")
                 break
 
-    # ── Test evaluation ────────────────────────────────────────────────────────
+    # -- Test evaluation --------------------------------------------------------
     if best_state is not None:
         model.load_state_dict(best_state)
 
     test_ap, test_roc, y_te, y_prob_te, y_pred_te = evaluate(data.test_mask)
 
-    print(f"\n  ── Test Results ({model_type.upper()}) ──────────────────")
+    print(f"\n  -- Test Results ({model_type.upper()}) ------------------")
     print(f"  PR-AUC  : {test_ap:.4f}")
     print(f"  ROC-AUC : {test_roc:.4f}")
     print(classification_report(y_te, y_pred_te,
                                 target_names=["Normal", "Mule"], digits=4))
 
-    # ── Full-graph probabilities ───────────────────────────────────────────────
+    # -- Full-graph probabilities -----------------------------------------------
     model.eval()
     with torch.no_grad():
         logits, embeddings = model(data.x, data.edge_index)
@@ -440,7 +440,7 @@ def train_gnn(
     proba_series = pd.Series(all_proba, index=accounts_ord, name="gnn_proba")
     emb_df       = pd.DataFrame(all_emb, index=accounts_ord)
 
-    # ── Save ──────────────────────────────────────────────────────────────────
+    # -- Save ------------------------------------------------------------------
     model_path = OUTPUTS_MODELS / f"gnn_{model_type}.pt"
     torch.save({
         "model_state":   best_state or model.state_dict(),
@@ -451,7 +451,7 @@ def train_gnn(
         "feat_cols":     feat_cols,
         "account_idx":   account_idx,
     }, model_path)
-    print(f"\n  Saved model → {model_path}")
+    print(f"\n  Saved model -> {model_path}")
 
     proba_series.to_csv(OUTPUTS_RESULTS / f"gnn_{model_type}_proba.csv", header=True)
 
@@ -492,9 +492,9 @@ def train_graph_sage(
     )
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 # EMBEDDING VISUALISATION (t-SNE)
-# ═══════════════════════════════════════════════════════════════════════════════
+# -------------------------------------------------------------------------------
 
 def plot_embeddings(
     embeddings:     pd.DataFrame,
@@ -555,7 +555,7 @@ def plot_embeddings(
         mpatches.Patch(color=NODE_COLOR_NORMAL, label=f"Normal ({(labels==0).sum():,})"),
     ]
     ax.legend(handles=legend, frameon=False, fontsize=11)
-    ax.set_title("GNN Node Embeddings — t-SNE Projection", fontsize=13, fontweight="bold")
+    ax.set_title("GNN Node Embeddings - t-SNE Projection", fontsize=13, fontweight="bold")
     ax.set_xlabel("t-SNE dim 1"); ax.set_ylabel("t-SNE dim 2")
     ax.spines[["top", "right"]].set_visible(False)
     plt.tight_layout()
@@ -564,6 +564,6 @@ def plot_embeddings(
         path = OUTPUTS_PLOTS / "10_gnn_embeddings_tsne.png"
         fig.savefig(path, dpi=PLOT_DPI, bbox_inches="tight")
         plt.close(fig)
-        print(f"  Saved → {path}")
+        print(f"  Saved -> {path}")
 
     return fig

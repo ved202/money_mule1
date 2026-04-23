@@ -1,19 +1,19 @@
 ======================================================================
-  MULE DETECTION SYSTEM — EVALUATION REPORT
+  MULE DETECTION SYSTEM â€” EVALUATION REPORT
 ======================================================================
 
-── MODEL PERFORMANCE (test set) ──────────────────────────
+â”€â”€ MODEL PERFORMANCE (test set) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
            Model  Precision  Recall     F1  PR-AUC  ROC-AUC
- IsolationForest     0.4030  0.4030 0.4030  0.3688   0.8771
-    RandomForest     0.9895  0.8745 0.9285  0.9893   0.9966
-GradientBoosting     0.9920  0.8733 0.9288  0.9902   0.9970
+ IsolationForest     0.3964  0.3964 0.3964  0.3625   0.8738
+    RandomForest     0.9928  0.8690 0.9268  0.9897   0.9968
+GradientBoosting     0.9940  0.8669 0.9261  0.9901   0.9969
         GNN-SAGE     0.9996  1.0000 0.9998  1.0000   1.0000
 
-── RECOMMENDED MODEL ─────────────────────────────────────
+â”€â”€ RECOMMENDED MODEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Best validation model : GNN-SAGE (PR-AUC=1.0000, ROC-AUC=1.0000)
   Recommendation        : Use this as the primary fraud detector on PaySim.
 
-── EARLY DETECTION (Objective 2) ────────────────────────
+â”€â”€ EARLY DETECTION (Objective 2) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Total mule accounts      : 16,382
   Caught at early stage    : 16,381
   Early Detection Gain     : 99.99%
@@ -21,9 +21,9 @@ GradientBoosting     0.9920  0.8733 0.9288  0.9902   0.9970
   Status                   : heuristic
   Interpretation           : Treat lifecycle output as heuristic until separately validated.
 
-── COMMUNITY DETECTION ──────────────────────────────────
+â”€â”€ COMMUNITY DETECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Suspicious communities   : 1,084
   Community recall         : 13.50%
 
-── SUSPICIOUS ACCOUNT SUMMARY ───────────────────────────
-  Total suspicious accounts: 17,896
+â”€â”€ SUSPICIOUS ACCOUNT SUMMARY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  Total suspicious accounts: 17,726

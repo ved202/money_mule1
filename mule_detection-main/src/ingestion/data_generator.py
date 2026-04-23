@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/ingestion/data_generator.py
 ================================
 Generates a realistic synthetic AML transaction dataset that simulates
@@ -6,7 +6,7 @@ PaySim / AMLSim style data.
 
 Design principles (matching real mule network behaviour):
   - Normal accounts: moderate, consistent transaction patterns
-  - Mule networks:   coordinated fan-in → pass-through → fan-out patterns
+  - Mule networks:   coordinated fan-in â†’ pass-through â†’ fan-out patterns
   - Layering:        mule accounts receive from "dirty" sources then split
                      the funds across many accounts to obscure origin
 
@@ -40,7 +40,7 @@ def _random_amount(low=10, high=50_000, skew=True) -> float:
 
 
 def _round_amount(approx: float) -> float:
-    """Snap to a round number — used for synthetic test transactions."""
+    """Snap to a round number â€” used for synthetic test transactions."""
     for base in [1000, 500, 100, 50]:
         if approx > base:
             return float(round(approx / base) * base)
@@ -68,14 +68,14 @@ def generate_synthetic_dataset(
     print("  Generating synthetic AML transaction dataset")
     print("=" * 60)
 
-    # ── Account pool ──────────────────────────────────────────────────────────
+    # â”€â”€ Account pool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     all_ids = list(range(n_accounts))
     n_mules = int(n_accounts * mule_fraction)
 
     # Assign mule accounts to networks
     mule_ids:   list[int] = []
-    mule_label: dict[int, int] = {}   # account_id → 1 if mule
-    mule_net:   dict[int, int] = {}   # account_id → network_id
+    mule_label: dict[int, int] = {}   # account_id â†’ 1 if mule
+    mule_net:   dict[int, int] = {}   # account_id â†’ network_id
 
     net_id = 0
     while len(mule_ids) < n_mules and net_id < n_mule_networks:
@@ -95,14 +95,14 @@ def generate_synthetic_dataset(
     print(f"  Mule accounts : {len(mule_ids):,} across {net_id} networks")
     print(f"  Normal accts  : {len(normal_ids):,}")
 
-    # ── Timeline ──────────────────────────────────────────────────────────────
+    # â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     start_dt = datetime(2023, 1, 1)
     end_dt   = datetime(2023, 6, 30)
     span_sec = int((end_dt - start_dt).total_seconds())
 
     records = []
 
-    # ── Normal transactions ───────────────────────────────────────────────────
+    # â”€â”€ Normal transactions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     n_normal_tx = int(n_transactions * 0.75)
     print(f"  Generating {n_normal_tx:,} normal transactions...")
     for _ in range(n_normal_tx):
@@ -116,8 +116,8 @@ def generate_synthetic_dataset(
             "is_fraud":          mule_label.get(src, 0),
         })
 
-    # ── Mule network transactions ─────────────────────────────────────────────
-    # Pattern: source → mule layer1 → mule layer2 → exit
+    # â”€â”€ Mule network transactions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # Pattern: source â†’ mule layer1 â†’ mule layer2 â†’ exit
     n_mule_tx = n_transactions - n_normal_tx
     print(f"  Generating {n_mule_tx:,} mule-network transactions...")
 
@@ -138,7 +138,7 @@ def generate_synthetic_dataset(
 
         net_tx_count = max(20, n_mule_tx // net_id)
 
-        # Phase 1 — Activation: small test transactions
+        # Phase 1 â€” Activation: small test transactions
         n_test = random.randint(2, 5)
         test_start = start_dt + timedelta(days=random.randint(0, 30))
         for _ in range(n_test):
@@ -154,7 +154,7 @@ def generate_synthetic_dataset(
                 "is_fraud":          1,
             })
 
-        # Phase 2 — Laundering: large rapid transfers into mule accounts
+        # Phase 2 â€” Laundering: large rapid transfers into mule accounts
         launder_start = test_start + timedelta(days=random.randint(5, 20))
         n_launder = int(net_tx_count * 0.4)
         for _ in range(n_launder):
@@ -171,7 +171,7 @@ def generate_synthetic_dataset(
                 "is_fraud":          1,
             })
 
-        # Phase 3 — Layering: pass money between mule accounts
+        # Phase 3 â€” Layering: pass money between mule accounts
         n_layer = int(net_tx_count * 0.35)
         for _ in range(n_layer):
             src = random.choice(collectors)
@@ -187,7 +187,7 @@ def generate_synthetic_dataset(
                 "is_fraud":          1,
             })
 
-        # Phase 4 — Exit: distribute to exit accounts (cash-out)
+        # Phase 4 â€” Exit: distribute to exit accounts (cash-out)
         n_exit = int(net_tx_count * 0.25)
         for _ in range(n_exit):
             src = random.choice(distributors)
@@ -203,7 +203,7 @@ def generate_synthetic_dataset(
                 "is_fraud":          1,
             })
 
-    # ── Assemble DataFrame ────────────────────────────────────────────────────
+    # â”€â”€ Assemble DataFrame â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     df = pd.DataFrame(records)
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df = df.sort_values("timestamp").reset_index(drop=True)
@@ -212,13 +212,13 @@ def generate_synthetic_dataset(
     fraud_rate = df["is_fraud"].mean()
     print(f"\n  Total transactions : {len(df):,}")
     print(f"  Fraud transactions : {df['is_fraud'].sum():,} ({fraud_rate:.2%})")
-    print(f"  Date range         : {df['timestamp'].min().date()} → "
+    print(f"  Date range         : {df['timestamp'].min().date()} â†’ "
           f"{df['timestamp'].max().date()}")
 
     if save:
         path = SYNTHETIC_TX
         df.to_csv(path, index=False)
-        print(f"\n  Saved → {path}")
+        print(f"\n  Saved â†’ {path}")
 
     return df
 

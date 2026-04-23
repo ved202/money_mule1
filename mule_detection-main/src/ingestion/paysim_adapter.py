@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/ingestion/paysim_adapter.py
 ================================
 Drop-in adapter for running the full pipeline on your PaySim dataset.
@@ -35,10 +35,10 @@ def prepare_paysim(path: str = None, sample_n: int = None) -> pd.DataFrame:
     3. Reconstruct synthetic timestamps from row order (your dataset has no 'step')
     4. Derive balance-based features (drain_rate, pass-through flag)
     5. Rename to canonical schema:
-         nameOrig  → sender_account
-         nameDest  → receiver_account
-         amount    → transaction_amount
-         isFraud   → is_fraud
+         nameOrig  â†’ sender_account
+         nameDest  â†’ receiver_account
+         amount    â†’ transaction_amount
+         isFraud   â†’ is_fraud
     6. Return canonical DataFrame ready for build_transaction_graph()
     """
     return load_paysim(path=path, sample_n=sample_n)

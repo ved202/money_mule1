@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/evaluation/evaluator.py
 ============================
 Computes and reports all model performance metrics.
@@ -40,9 +40,9 @@ def evaluate_model(
     tn  = cm[0, 0]; fp = cm[0, 1]; fn = cm[1, 0]; tp = cm[1, 1]
 
     if verbose:
-        print(f"\n{'─'*50}")
+        print(f"\n{'â”€'*50}")
         print(f"  {name}")
-        print(f"{'─'*50}")
+        print(f"{'â”€'*50}")
         print(classification_report(y_true, y_pred,
                                     target_names=["Normal", "Mule"], digits=4))
         print(f"  PR-AUC  : {pra:.4f}")
@@ -61,7 +61,7 @@ def evaluate_model(
 
 
 def evaluate_early_detection(lifecycle_df: pd.DataFrame) -> dict:
-    """Compute Early Detection Gain — mules caught before Laundering."""
+    """Compute Early Detection Gain â€” mules caught before Laundering."""
     if "is_fraud" not in lifecycle_df.columns:
         return {}
 
@@ -72,9 +72,9 @@ def evaluate_early_detection(lifecycle_df: pd.DataFrame) -> dict:
 
     stage_dist = mules["lifecycle_stage"].value_counts().to_dict()
 
-    print(f"\n{'─'*50}")
+    print(f"\n{'â”€'*50}")
     print(f"  Early Detection Gain")
-    print(f"{'─'*50}")
+    print(f"{'â”€'*50}")
     print(f"  Total mule accounts   : {total:,}")
     print(f"  Caught early          : {early:,} ({edg:.2%})")
     print(f"  Stage distribution    : {stage_dist}")
@@ -118,9 +118,9 @@ def evaluate_community_detection(
     )
     community_recall = mules_in_susp / max(total_mules, 1)
 
-    print(f"\n{'─'*50}")
+    print(f"\n{'â”€'*50}")
     print(f"  Community Detection")
-    print(f"{'─'*50}")
+    print(f"{'â”€'*50}")
     print(f"  Suspicious communities: {len(suspicious_cids):,}")
     print(f"  Mules in susp. comms  : {mules_in_susp}/{total_mules} "
           f"({community_recall:.2%})")
@@ -141,10 +141,10 @@ def compile_report(
     """Build and save the full evaluation report."""
     lines = []
     lines.append("=" * 70)
-    lines.append("  MULE DETECTION SYSTEM — EVALUATION REPORT")
+    lines.append("  MULE DETECTION SYSTEM â€” EVALUATION REPORT")
     lines.append("=" * 70)
 
-    lines.append("\n── MODEL PERFORMANCE (test set) ──────────────────────────")
+    lines.append("\nâ”€â”€ MODEL PERFORMANCE (test set) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")
     df = pd.DataFrame(model_metrics)
     lines.append(df[["Model","Precision","Recall","F1","PR-AUC","ROC-AUC"]]
                  .to_string(index=False))
@@ -153,7 +153,7 @@ def compile_report(
     if not perf_df.empty and "PR-AUC" in perf_df.columns:
         best_idx = perf_df["PR-AUC"].astype(float).idxmax()
         best = perf_df.loc[best_idx]
-        lines.append("\n── RECOMMENDED MODEL ─────────────────────────────────────")
+        lines.append("\nâ”€â”€ RECOMMENDED MODEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")
         lines.append(
             f"  Best validation model : {best['Model']} "
             f"(PR-AUC={float(best['PR-AUC']):.4f}, ROC-AUC={float(best['ROC-AUC']):.4f})"
@@ -161,7 +161,7 @@ def compile_report(
         lines.append("  Recommendation        : Use this as the primary fraud detector on PaySim.")
 
     if early_detection:
-        lines.append("\n── EARLY DETECTION (Objective 2) ────────────────────────")
+        lines.append("\nâ”€â”€ EARLY DETECTION (Objective 2) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")
         lines.append(f"  Total mule accounts      : {early_detection.get('total_mules', 0):,}")
         lines.append(f"  Caught at early stage    : {early_detection.get('early_detected', 0):,}")
         lines.append(f"  Early Detection Gain     : {early_detection.get('early_detection_gain', 0):.2%}")
@@ -170,11 +170,11 @@ def compile_report(
         lines.append("  Interpretation           : Treat lifecycle output as heuristic until separately validated.")
 
     if community_eval:
-        lines.append("\n── COMMUNITY DETECTION ──────────────────────────────────")
+        lines.append("\nâ”€â”€ COMMUNITY DETECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")
         lines.append(f"  Suspicious communities   : {community_eval.get('n_suspicious_communities', 0):,}")
         lines.append(f"  Community recall         : {community_eval.get('community_recall', 0):.2%}")
 
-    lines.append(f"\n── SUSPICIOUS ACCOUNT SUMMARY ───────────────────────────")
+    lines.append(f"\nâ”€â”€ SUSPICIOUS ACCOUNT SUMMARY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")
     lines.append(f"  Total suspicious accounts: {len(suspicious_accounts):,}")
 
     report = "\n".join(lines)
@@ -182,6 +182,6 @@ def compile_report(
     with open(path, "w", encoding="utf-8") as f:
         f.write(report)
 
-    print(f"\n  Full report saved → {path}")
+    print(f"\n  Full report saved â†’ {path}")
     print(report)
     return report

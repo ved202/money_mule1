@@ -1,5 +1,5 @@
-"""
-src/lifecycle/lifecycle_detector.py   (v2 — improved rules + ML stage classifier)
+﻿"""
+src/lifecycle/lifecycle_detector.py   (v2 â€” improved rules + ML stage classifier)
 ====================================================================================
 Objective 2: Early-Stage Mule Lifecycle Detection
 """
@@ -72,7 +72,7 @@ def train_lifecycle_classifier(feature_matrix: pd.DataFrame):
     fm["rule_stage"] = fm.apply(classify_lifecycle_stage, axis=1)
     train_df = fm[fm["rule_stage"] != "Normal"].copy()
     if len(train_df) < 20:
-        print("    Insufficient labelled data — using rule-based only")
+        print("    Insufficient labelled data â€” using rule-based only")
         return None
     feat_cols = [c for c in _STAGE_FEATURES if c in train_df.columns]
     X  = train_df[feat_cols].fillna(0).values
@@ -132,7 +132,7 @@ def detect_lifecycle_stages(feature_matrix: pd.DataFrame, use_ml: bool = True) -
     for stage in LIFECYCLE_STAGES:
         count = stage_counts.get(stage, 0)
         pct   = count / len(fm) * 100
-        bar   = "█" * max(int(pct / 2), 0)
+        bar   = "â–ˆ" * max(int(pct / 2), 0)
         print(f"    {stage:12s} : {count:5,}  ({pct:5.1f}%)  {bar}")
 
     fraud_col = "is_fraud_sender" if "is_fraud_sender" in fm.columns else "is_fraud"

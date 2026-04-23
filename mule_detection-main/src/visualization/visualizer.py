@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/visualization/visualizer.py
 ================================
 All visualisation functions for the mule detection system.
@@ -13,7 +13,7 @@ Plots produced
 6.  Lifecycle stage distribution
 7.  Temporal drift for a sample mule account
 8.  Community suspicion scores
-9.  Fund flow heatmap (sender → receiver amount matrix)
+9.  Fund flow heatmap (sender â†’ receiver amount matrix)
 10. Anomaly score distribution
 """
 
@@ -31,13 +31,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from config.config import *
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _save(fig, name: str):
     path = OUTPUTS_PLOTS / f"{name}.png"
     fig.savefig(path, dpi=PLOT_DPI, bbox_inches="tight")
     plt.close(fig)
-    print(f"  Saved → {path}")
+    print(f"  Saved â†’ {path}")
 
 
 def _node_colors(G: nx.DiGraph, community_map: dict = None) -> list:
@@ -53,7 +53,7 @@ def _node_colors(G: nx.DiGraph, community_map: dict = None) -> list:
     return colors
 
 
-# ── 1. Full network overview ──────────────────────────────────────────────────
+# â”€â”€ 1. Full network overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_transaction_network(
     G: nx.DiGraph,
@@ -130,7 +130,7 @@ def plot_transaction_network(
     return fig
 
 
-# ── 2. Suspicious cluster subgraph ───────────────────────────────────────────
+# â”€â”€ 2. Suspicious cluster subgraph â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_mule_cluster(
     G: nx.DiGraph,
@@ -195,7 +195,7 @@ def plot_mule_cluster(
     return fig
 
 
-# ── 3. Feature importance ─────────────────────────────────────────────────────
+# â”€â”€ 3. Feature importance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_feature_importance(
     feat_importance: pd.Series,
@@ -209,7 +209,7 @@ def plot_feature_importance(
     colors  = ["#185FA5" if v > fi.median() else "#85B7EB" for v in fi.values]
     fi.plot(kind="barh", ax=ax, color=colors, edgecolor="none", alpha=0.9)
 
-    ax.set_title(f"Top {top_n} Feature Importances — Random Forest",
+    ax.set_title(f"Top {top_n} Feature Importances â€” Random Forest",
                  fontsize=13, fontweight="bold")
     ax.set_xlabel("Importance score")
     ax.spines[["top", "right"]].set_visible(False)
@@ -220,7 +220,7 @@ def plot_feature_importance(
     return fig
 
 
-# ── 4. Precision-Recall curves ────────────────────────────────────────────────
+# â”€â”€ 4. Precision-Recall curves â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_pr_curves(
     model_results: dict,   # {model_name: {"y_test": ..., "y_prob_test": ...}}
@@ -243,7 +243,7 @@ def plot_pr_curves(
 
     ax.set_xlabel("Recall", fontsize=11)
     ax.set_ylabel("Precision", fontsize=11)
-    ax.set_title("Precision-Recall Curves — All Models", fontsize=13, fontweight="bold")
+    ax.set_title("Precision-Recall Curves â€” All Models", fontsize=13, fontweight="bold")
     ax.legend(frameon=False, fontsize=10)
     ax.grid(True, alpha=0.2)
     ax.spines[["top", "right"]].set_visible(False)
@@ -254,7 +254,7 @@ def plot_pr_curves(
     return fig
 
 
-# ── 5. Model comparison bar chart ─────────────────────────────────────────────
+# â”€â”€ 5. Model comparison bar chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_model_comparison(
     comparison_df: pd.DataFrame,
@@ -284,7 +284,7 @@ def plot_model_comparison(
     ax.set_xticklabels(metrics, fontsize=11)
     ax.set_ylim(0, 1.15)
     ax.set_ylabel("Score")
-    ax.set_title("Model Comparison — Mule Detection Performance",
+    ax.set_title("Model Comparison â€” Mule Detection Performance",
                  fontsize=13, fontweight="bold")
     ax.legend(frameon=False, fontsize=10)
     ax.spines[["top", "right"]].set_visible(False)
@@ -295,17 +295,15 @@ def plot_model_comparison(
     return fig
 
 
-# ── 6. Lifecycle distribution ─────────────────────────────────────────────────
+# â”€â”€ 6. Lifecycle distribution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_lifecycle_distribution(lifecycle_df: pd.DataFrame, save: bool = True):
     print("\nPlotting lifecycle stage distribution...")
     stage_order  = ["Dormant", "Recruitment", "Activation", "Laundering", "Exit", "Normal"]
     stage_colors = ["#B4B2A9", "#85B7EB", "#EF9F27", "#E24B4A", "#888780", "#9FE1CB"]
 
-    # Use sender-side fraud labels when available to align with original dataset counts.
-    fraud_col = "is_fraud_sender" if "is_fraud_sender" in lifecycle_df.columns else "is_fraud"
-    if fraud_col in lifecycle_df.columns:
-        mule_counts = lifecycle_df[lifecycle_df[fraud_col] == 1][
+    if "is_fraud" in lifecycle_df.columns:
+        mule_counts = lifecycle_df[lifecycle_df["is_fraud"] == 1][
             "lifecycle_stage"
         ].value_counts().reindex(stage_order, fill_value=0)
     else:
@@ -330,7 +328,7 @@ def plot_lifecycle_distribution(lifecycle_df: pd.DataFrame, save: bool = True):
     return fig
 
 
-# ── 7. Temporal drift for a sample account ────────────────────────────────────
+# â”€â”€ 7. Temporal drift for a sample account â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_temporal_drift(
     df: pd.DataFrame,
@@ -383,7 +381,7 @@ def plot_temporal_drift(
     return fig
 
 
-# ── 8. Community suspicion scores ─────────────────────────────────────────────
+# â”€â”€ 8. Community suspicion scores â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_community_suspicion(comm_df: pd.DataFrame, save: bool = True):
     print("\nPlotting community suspicion scores...")
@@ -423,7 +421,7 @@ def plot_community_suspicion(comm_df: pd.DataFrame, save: bool = True):
     return fig
 
 
-# ── 9. Anomaly score distribution ─────────────────────────────────────────────
+# â”€â”€ 9. Anomaly score distribution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_anomaly_scores(
     scores: pd.Series,

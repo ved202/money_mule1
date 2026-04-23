@@ -1,16 +1,16 @@
-"""
+﻿"""
 src/graph/graph_builder.py
 ===========================
 Constructs directed transaction graphs from canonical transaction DataFrames.
 
 Graph model:
   Nodes  = bank accounts
-  Edges  = directed money flows  (sender → receiver)
+  Edges  = directed money flows  (sender â†’ receiver)
   Attrs  = total_amount, tx_count, first_seen, last_seen, is_fraud_edge
 
 Two graph objects are maintained:
-  G_full    : multi-edge DiGraph (one edge per transaction — preserves time)
-  G_summary : weighted DiGraph  (one edge per sender-receiver pair — for ML)
+  G_full    : multi-edge DiGraph (one edge per transaction â€” preserves time)
+  G_summary : weighted DiGraph  (one edge per sender-receiver pair â€” for ML)
 """
 
 import networkx as nx
@@ -32,12 +32,12 @@ def build_transaction_graph(df: pd.DataFrame) -> tuple[nx.DiGraph, nx.MultiDiGra
 
     Returns
     -------
-    G_summary : nx.DiGraph       — aggregated edge weights
-    G_full    : nx.MultiDiGraph  — one edge per individual transaction
+    G_summary : nx.DiGraph       â€” aggregated edge weights
+    G_full    : nx.MultiDiGraph  â€” one edge per individual transaction
     """
     print("Building transaction graphs...")
 
-    # ── Node registry: every unique account ───────────────────────────────────
+    # â”€â”€ Node registry: every unique account â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     senders   = set(df["sender_account"].unique())
     receivers = set(df["receiver_account"].unique())
     all_nodes = senders | receivers
@@ -46,7 +46,7 @@ def build_transaction_graph(df: pd.DataFrame) -> tuple[nx.DiGraph, nx.MultiDiGra
     fraud_senders = set(df[df["is_fraud"] == 1]["sender_account"].unique())
     node_labels   = {n: (1 if n in fraud_senders else 0) for n in all_nodes}
 
-    # ── Summary graph (weighted) ───────────────────────────────────────────────
+    # â”€â”€ Summary graph (weighted) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     G_summary = nx.DiGraph()
     G_summary.add_nodes_from([
         (n, {"is_fraud": node_labels[n]}) for n in all_nodes
@@ -75,7 +75,7 @@ def build_transaction_graph(df: pd.DataFrame) -> tuple[nx.DiGraph, nx.MultiDiGra
         attrs["is_fraud_edge"] = int(attrs["fraud_count"] > 0)
         G_summary.add_edge(src, dst, **attrs)
 
-    # ── Full multi-edge graph ──────────────────────────────────────────────────
+    # â”€â”€ Full multi-edge graph â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     G_full = nx.MultiDiGraph()
     G_full.add_nodes_from([(n, {"is_fraud": node_labels[n]}) for n in all_nodes])
     for row in df.itertuples(index=False):

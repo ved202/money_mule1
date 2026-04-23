@@ -5,3 +5,11 @@ __pycache__/
 .pytest_cache/
 
 data/raw/
+data/synthetic/
+data/processed/
+testing_data/
+testing_output/
+outputs/models/
+outputs/results/
+out.log
+fix_mojibake.py

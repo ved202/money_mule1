@@ -1,13 +1,13 @@
-"""
+﻿"""
 src/community/community_detector.py
 =====================================
 Detects coordinated mule networks as graph communities.
 
 Methods
 -------
-1. Louvain community detection  — finds densely connected clusters
-2. Weakly connected components  — finds all reachable account groups
-3. Suspicious cluster scoring   — ranks communities by mule density
+1. Louvain community detection  â€” finds densely connected clusters
+2. Weakly connected components  â€” finds all reachable account groups
+3. Suspicious cluster scoring   â€” ranks communities by mule density
 
 Why mule networks form clusters
 --------------------------------
@@ -53,7 +53,7 @@ def detect_communities(
 
     Returns
     -------
-    partition : {account → community_id}
+    partition : {account â†’ community_id}
     """
     print(f"\nDetecting communities (method={method})...")
     G_und = G.to_undirected()
@@ -93,13 +93,13 @@ def score_communities(
     Score each community on multiple suspicion indicators.
 
     Suspicion indicators:
-      mule_rate         — fraction of labelled mules in community
-      avg_pagerank      — mean PageRank (hub centrality)
-      avg_betweenness   — mean betweenness centrality
-      avg_passthrough   — mean pass-through ratio
-      avg_burst_ratio   — mean burst score
-      internal_density  — edges within community / possible edges
-      size              — number of accounts
+      mule_rate         â€” fraction of labelled mules in community
+      avg_pagerank      â€” mean PageRank (hub centrality)
+      avg_betweenness   â€” mean betweenness centrality
+      avg_passthrough   â€” mean pass-through ratio
+      avg_burst_ratio   â€” mean burst score
+      internal_density  â€” edges within community / possible edges
+      size              â€” number of accounts
 
     Returns DataFrame of communities sorted by suspicion_score.
     """

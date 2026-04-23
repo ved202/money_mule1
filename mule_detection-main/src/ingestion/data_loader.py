@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/ingestion/data_loader.py
 =============================
 Loads transaction data from any supported source and normalises it
@@ -21,7 +21,7 @@ from config.config import *
 from src.ingestion.data_generator import generate_synthetic_dataset
 
 
-# ── Column mapping definitions ────────────────────────────────────────────────
+# â”€â”€ Column mapping definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Keys = canonical name, values = known aliases in raw datasets
 COLUMN_ALIASES = {
     "sender_account":    ["nameOrig", "sender", "source_account",
@@ -64,28 +64,28 @@ def _normalise(df: pd.DataFrame, col_map: dict[str, str],
         df[col_map["transaction_amount"]], errors="coerce"
     ).fillna(0).abs()
 
-    # Timestamp — handle both datetime and integer step columns
+    # Timestamp â€” handle both datetime and integer step columns
     if "timestamp" in col_map:
         raw_ts = df[col_map["timestamp"]]
         if pd.api.types.is_numeric_dtype(raw_ts):
-            # PaySim 'step' = hours since epoch → convert to datetime
+            # PaySim 'step' = hours since epoch â†’ convert to datetime
             base = pd.Timestamp("2023-01-01")
             out["timestamp"] = base + pd.to_timedelta(raw_ts, unit="h")
         else:
             out["timestamp"] = pd.to_datetime(raw_ts, errors="coerce")
     else:
-        # No time column — generate synthetic monotonic timestamps
+        # No time column â€” generate synthetic monotonic timestamps
         out["timestamp"] = pd.date_range(
             "2023-01-01", periods=len(df), freq="1min"
         )
 
-    # Label — optional
+    # Label â€” optional
     if "is_fraud" in col_map:
         out["is_fraud"] = pd.to_numeric(
             df[col_map["is_fraud"]], errors="coerce"
         ).fillna(0).astype(int)
     else:
-        out["is_fraud"] = 0   # unknown → treat as unlabelled
+        out["is_fraud"] = 0   # unknown â†’ treat as unlabelled
 
     return out.dropna(subset=["sender_account", "receiver_account"])
 
@@ -189,7 +189,7 @@ def load_paysim(path=None, sample_n: int = None) -> pd.DataFrame:
     ]
     canonical_path = DATA_PROCESSED / "paysim_canonical.csv"
     out[[c for c in save_cols if c in out.columns]].to_csv(canonical_path, index=False)
-    print(f"  Saved canonical PaySim → {canonical_path}")
+    print(f"  Saved canonical PaySim â†’ {canonical_path}")
 
     _print_summary(out, "PaySim")
     return out
@@ -248,9 +248,9 @@ def _print_summary(df: pd.DataFrame, name: str):
     print(f"\n  [{name}] Loaded {len(df):,} transactions")
     print(f"  Unique senders   : {df['sender_account'].nunique():,}")
     print(f"  Unique receivers : {df['receiver_account'].nunique():,}")
-    print(f"  Amount range     : {df['transaction_amount'].min():,.2f} – "
+    print(f"  Amount range     : {df['transaction_amount'].min():,.2f} â€“ "
           f"{df['transaction_amount'].max():,.2f}")
-    print(f"  Date range       : {df['timestamp'].min().date()} → "
+    print(f"  Date range       : {df['timestamp'].min().date()} â†’ "
           f"{df['timestamp'].max().date()}")
     if df["is_fraud"].sum() > 0:
         print(f"  Fraud rate       : {df['is_fraud'].mean():.4%}")

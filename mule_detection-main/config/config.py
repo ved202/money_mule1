@@ -11,13 +11,18 @@ from pathlib import Path
 
 # ── Root paths ────────────────────────────────────────────────────────────────
 ROOT_DIR        = Path(__file__).resolve().parent.parent
-DATA_RAW        = ROOT_DIR / "data" / "raw"
-DATA_PROCESSED  = ROOT_DIR / "data" / "processed"
-DATA_SYNTHETIC  = ROOT_DIR / "data" / "synthetic"
-OUTPUTS_PLOTS   = ROOT_DIR / "outputs" / "plots"
-OUTPUTS_REPORTS = ROOT_DIR / "outputs" / "reports"
-OUTPUTS_MODELS  = ROOT_DIR / "outputs" / "models"
-OUTPUTS_RESULTS = ROOT_DIR / "outputs" / "results"
+
+# Allow overriding the data folder via environment variable
+DATA_BASE       = os.getenv("MULE_DATA_DIR", "data")
+DATA_RAW        = ROOT_DIR / DATA_BASE / "raw"
+DATA_PROCESSED  = ROOT_DIR / DATA_BASE / "processed"
+DATA_SYNTHETIC  = ROOT_DIR / DATA_BASE / "synthetic"
+# Allow overriding the output folder via environment variable
+OUTPUT_BASE     = os.getenv("MULE_OUTPUT_DIR", "outputs")
+OUTPUTS_PLOTS   = ROOT_DIR / OUTPUT_BASE / "plots"
+OUTPUTS_REPORTS = ROOT_DIR / OUTPUT_BASE / "reports"
+OUTPUTS_MODELS  = ROOT_DIR / OUTPUT_BASE / "models"
+OUTPUTS_RESULTS = ROOT_DIR / OUTPUT_BASE / "results"
 
 for d in [DATA_RAW, DATA_PROCESSED, DATA_SYNTHETIC,
           OUTPUTS_PLOTS, OUTPUTS_REPORTS, OUTPUTS_MODELS, OUTPUTS_RESULTS]:

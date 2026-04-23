@@ -1,17 +1,17 @@
-"""
+﻿"""
 main_pipeline.py
 =================
 Master orchestration script for the Money Mule Detection System.
 
 Runs all phases in sequence:
-  Phase 1  — Data ingestion (load or generate dataset)
-  Phase 2  — Graph construction
-  Phase 3  — Feature engineering
-  Phase 4  — Community detection
-  Phase 5  — Machine learning models (Isolation Forest, RF, GB)
-  Phase 6  — Lifecycle stage classification
-  Phase 7  — Evaluation & reporting
-  Phase 8  — Visualisations
+  Phase 1  â€” Data ingestion (load or generate dataset)
+  Phase 2  â€” Graph construction
+  Phase 3  â€” Feature engineering
+  Phase 4  â€” Community detection
+  Phase 5  â€” Machine learning models (Isolation Forest, RF, GB)
+  Phase 6  â€” Lifecycle stage classification
+  Phase 7  â€” Evaluation & reporting
+  Phase 8  â€” Visualisations
 
 Usage
 -----
@@ -57,7 +57,7 @@ from src.evaluation.evaluator        import (
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--source", default="paysim",
-                   choices=["synthetic", "paysim", "amlsim"],
+                   choices=["synthetic", "paysim", "amlsim", "custom", "advanced_synthetic"],
                    help="Data source")
     p.add_argument("--path",   default=None, help="Path to CSV file")
     p.add_argument("--sample", type=int, default=None,
@@ -83,9 +83,9 @@ def parse_args():
 
 
 def banner(text):
-    print(f"\n{'═'*65}")
+    print(f"\n{'='*65}")
     print(f"  {text}")
-    print(f"{'═'*65}")
+    print(f"{'='*65}")
 
 
 def derive_score_threshold(scores: pd.Series, labels: pd.Series | np.ndarray | None) -> float:
@@ -115,16 +115,29 @@ def run_pipeline(args=None):
 
     t_total = time.time()
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 1 — DATA INGESTION
-    # ══════════════════════════════════════════════════════════════════════════
-    banner("Phase 1 — Data Ingestion")
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 1 â€” DATA INGESTION
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    banner("Phase 1 â€” Data Ingestion")
     t0 = time.time()
 
     if args.source == "paysim":
         df = load_paysim(path=args.path, sample_n=args.sample)
     elif args.source == "amlsim":
         df = load_amlsim(path=args.path, sample_n=args.sample)
+    elif args.source == "custom":
+        from src.ingestion.data_loader import load_csv
+        if not args.path:
+            raise ValueError("Must provide --path when using --source custom")
+        df = load_csv(path=args.path)
+        if args.sample and len(df) > args.sample:
+            df = df.sample(args.sample, random_state=RANDOM_STATE).reset_index(drop=True)
+    elif args.source == "advanced_synthetic":
+        from src.ingestion.advanced_generator import generate_advanced_synthetic_dataset
+        df = generate_advanced_synthetic_dataset()
+        df["source"] = "advanced_synthetic"
+        if args.sample and len(df) > args.sample:
+            df = df.sample(args.sample, random_state=RANDOM_STATE).reset_index(drop=True)
     else:
         df = load_synthetic(regenerate=args.regen)
         if args.sample and len(df) > args.sample:
@@ -134,10 +147,10 @@ def run_pipeline(args=None):
     df.to_csv(DATA_PROCESSED / "canonical_transactions.csv", index=False)
     print(f"  Phase 1 done in {time.time()-t0:.1f}s")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 2 — GRAPH CONSTRUCTION
-    # ══════════════════════════════════════════════════════════════════════════
-    banner("Phase 2 — Graph Construction")
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 2 â€” GRAPH CONSTRUCTION
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    banner("Phase 2 â€” Graph Construction")
     t0 = time.time()
 
     G_summary, G_full = build_transaction_graph(df)
@@ -149,10 +162,10 @@ def run_pipeline(args=None):
 
     print(f"  Phase 2 done in {time.time()-t0:.1f}s")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 3 — FEATURE ENGINEERING
-    # ══════════════════════════════════════════════════════════════════════════
-    banner("Phase 3 — Feature Engineering")
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 3 â€” FEATURE ENGINEERING
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    banner("Phase 3 â€” Feature Engineering")
     t0 = time.time()
 
     feature_matrix = build_feature_matrix(df, G_summary)
@@ -161,10 +174,10 @@ def run_pipeline(args=None):
     print(f"  Feature columns: {len(feat_cols)}")
     print(f"  Phase 3 done in {time.time()-t0:.1f}s")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 4 — COMMUNITY DETECTION
-    # ══════════════════════════════════════════════════════════════════════════
-    banner("Phase 4 — Community Detection")
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 4 â€” COMMUNITY DETECTION
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    banner("Phase 4 â€” Community Detection")
     t0 = time.time()
 
     partition = detect_communities(G_summary, method="louvain")
@@ -205,10 +218,10 @@ def run_pipeline(args=None):
                 print("  Install the driver with: python3 -m pip install neo4j")
         print(f"  Neo4j step done in {time.time()-t0:.1f}s")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 5 — MACHINE LEARNING MODELS
-    # ══════════════════════════════════════════════════════════════════════════
-    banner("Phase 5 — Machine Learning Models")
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 5 â€” MACHINE LEARNING MODELS
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    banner("Phase 5 â€” Machine Learning Models")
     t0 = time.time()
 
     has_labels = (
@@ -355,10 +368,10 @@ def run_pipeline(args=None):
     print(f"\n  Total suspicious accounts (ensemble + community): {len(suspicious_all):,}")
     print(f"  Phase 5 done in {time.time()-t0:.1f}s")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 6 — LIFECYCLE DETECTION
-    # ══════════════════════════════════════════════════════════════════════════
-    banner("Phase 6 — Lifecycle Stage Detection")
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 6 â€” LIFECYCLE DETECTION
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    banner("Phase 6 â€” Lifecycle Stage Detection")
     t0 = time.time()
 
     lifecycle_df    = detect_lifecycle_stages(feature_matrix)
@@ -368,10 +381,10 @@ def run_pipeline(args=None):
     )
     print(f"  Phase 6 done in {time.time()-t0:.1f}s")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 7 — EVALUATION & REPORTING
-    # ══════════════════════════════════════════════════════════════════════════
-    banner("Phase 7 — Evaluation & Reporting")
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 7 â€” EVALUATION & REPORTING
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    banner("Phase 7 â€” Evaluation & Reporting")
     t0 = time.time()
 
     model_metrics = [iso_res, rf_results_eval, gb_results_eval]
@@ -387,9 +400,9 @@ def run_pipeline(args=None):
     compile_report(model_metrics, early_eval, comm_eval, suspicious_all)
     print(f"  Phase 7 done in {time.time()-t0:.1f}s")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # PHASE 8 — VISUALISATIONS
-    # ══════════════════════════════════════════════════════════════════════════
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # PHASE 8 â€” VISUALISATIONS
+    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     if not args.skip_viz:
         from src.visualization.visualizer import (
             plot_transaction_network, plot_mule_cluster,
@@ -399,7 +412,7 @@ def run_pipeline(args=None):
             plot_anomaly_scores,
         )
 
-        banner("Phase 8 — Visualisations")
+        banner("Phase 8 â€” Visualisations")
         t0 = time.time()
 
         plot_transaction_network(G_summary)
@@ -446,7 +459,7 @@ def run_pipeline(args=None):
     else:
         print("\nVisualisations skipped (--skip-viz flag set)")
 
-    # ── Final summary ─────────────────────────────────────────────────────────
+    # â”€â”€ Final summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     banner("Pipeline Complete")
     print(f"  Total time           : {time.time()-t_total:.1f}s")
     print(f"  Suspicious accounts  : {len(suspicious_all):,}")

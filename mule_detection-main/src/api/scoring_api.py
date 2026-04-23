@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/api/scoring_api.py
 =======================
 Real-time mule detection scoring API built with FastAPI.
@@ -11,11 +11,11 @@ In a real FinTech system, this API would be called by:
 
 Endpoints
 ---------
-  POST /score/account         — score a single account by ID
-  POST /score/batch           — score a batch of accounts
-  POST /score/transaction     — score a new transaction in real-time
-  GET  /health                — health check
-  GET  /model/info            — return loaded model metadata
+  POST /score/account         â€” score a single account by ID
+  POST /score/batch           â€” score a batch of accounts
+  POST /score/transaction     â€” score a new transaction in real-time
+  GET  /health                â€” health check
+  GET  /model/info            â€” return loaded model metadata
 
 Usage
 -----
@@ -45,7 +45,7 @@ from typing import Optional
 import json
 from glob import glob
 
-# ── FastAPI import guard ──────────────────────────────────────────────────────
+# â”€â”€ FastAPI import guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 try:
     from fastapi import FastAPI, HTTPException, BackgroundTasks
     from fastapi.responses import JSONResponse
@@ -62,7 +62,7 @@ except ImportError:
     def Field(*args, **kwargs):
         return None
 
-# ── Pydantic request/response models ─────────────────────────────────────────
+# â”€â”€ Pydantic request/response models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class AccountScoreRequest(BaseModel):
     account_id: str = Field(..., description="Account identifier")
@@ -98,7 +98,7 @@ class AccountScoreResponse(BaseModel):
     scored_at:        str
 
 
-# ── Model registry ────────────────────────────────────────────────────────────
+# â”€â”€ Model registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class ModelRegistry:
     """Loads and caches all trained models at startup."""
@@ -171,7 +171,7 @@ class ModelRegistry:
         )
 
 
-# ── Scoring logic ─────────────────────────────────────────────────────────────
+# â”€â”€ Scoring logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _risk_tier(score: float) -> str:
     if score < 0.25:  return "LOW"
@@ -197,7 +197,7 @@ def _ensemble_score(registry: ModelRegistry, x_scaled: np.ndarray) -> float:
     if registry.iso_bundle:
         iso   = registry.iso_bundle["model"]
         raw   = -iso.score_samples(x_scaled)[0]
-        # Normalise iso score to [0,1] — use historical percentile as proxy
+        # Normalise iso score to [0,1] â€” use historical percentile as proxy
         normed = float(np.clip((raw + 0.5) / 1.0, 0, 1))
         scores.append(("iso", normed, 0.20))
 
@@ -237,7 +237,7 @@ def _top_features(registry: ModelRegistry, x_scaled: np.ndarray,
 
     rf      = registry.rf_bundle["model"]
     fi      = rf.feature_importances_
-    contrib = fi * np.abs(x_scaled[0])   # importance × feature magnitude
+    contrib = fi * np.abs(x_scaled[0])   # importance Ã— feature magnitude
     top_idx = np.argsort(contrib)[::-1][:n]
 
     return [
@@ -252,7 +252,7 @@ def _top_features(registry: ModelRegistry, x_scaled: np.ndarray,
 
 def score_account(account_id: str, registry: ModelRegistry,
                   include_explanation: bool = True) -> dict:
-    """Core scoring function — used by both API and batch jobs."""
+    """Core scoring function â€” used by both API and batch jobs."""
 
     if registry.feature_matrix is None:
         raise ValueError("Feature matrix not loaded")
@@ -260,7 +260,7 @@ def score_account(account_id: str, registry: ModelRegistry,
     if account_id not in registry.feature_matrix.index:
         raise KeyError(f"Account '{account_id}' not found in feature matrix")
 
-    # ── Get features ─────────────────────────────────────────────────────────
+    # â”€â”€ Get features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     row       = registry.feature_matrix.loc[account_id]
     feat_cols = registry.rf_bundle["feat_cols"] if registry.rf_bundle \
                 else [c for c in row.index if c not in {"is_fraud", "community_id"}]
@@ -269,16 +269,16 @@ def score_account(account_id: str, registry: ModelRegistry,
     scaler   = (registry.rf_bundle or registry.iso_bundle)["scaler"]
     x_scaled = scaler.transform(x_raw)
 
-    # ── Score ─────────────────────────────────────────────────────────────────
+    # â”€â”€ Score â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     precomputed = _lookup_precomputed_score(account_id, registry)
     score = precomputed["ensemble_score"] if precomputed is not None else _ensemble_score(registry, x_scaled)
 
-    # ── Lifecycle stage ───────────────────────────────────────────────────────
+    # â”€â”€ Lifecycle stage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     stage = None
     if registry.lifecycle_df is not None and account_id in registry.lifecycle_df.index:
         stage = registry.lifecycle_df.loc[account_id, "lifecycle_stage"]
 
-    # ── Risk factors ─────────────────────────────────────────────────────────
+    # â”€â”€ Risk factors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     top_rf = _top_features(registry, x_scaled, feat_cols) if include_explanation else []
 
     return {
@@ -294,9 +294,9 @@ def score_account(account_id: str, registry: ModelRegistry,
     }
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # FastAPI APPLICATION
-# ═══════════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 if FASTAPI_AVAILABLE:
     app      = FastAPI(
@@ -349,7 +349,7 @@ if FASTAPI_AVAILABLE:
     @app.post("/score/account", response_model=AccountScoreResponse)
     async def score_account_endpoint(request: AccountScoreRequest):
         if not registry.is_ready():
-            raise HTTPException(503, "Models not loaded yet — try again shortly")
+            raise HTTPException(503, "Models not loaded yet â€” try again shortly")
         try:
             result = score_account(
                 request.account_id, registry,
@@ -441,7 +441,7 @@ if FASTAPI_AVAILABLE:
         }
 
 
-# ── Standalone runner ─────────────────────────────────────────────────────────
+# â”€â”€ Standalone runner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 if __name__ == "__main__":
     if not FASTAPI_AVAILABLE:
