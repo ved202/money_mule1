@@ -237,7 +237,7 @@ def _top_features(registry: ModelRegistry, x_scaled: np.ndarray,
 
     rf      = registry.rf_bundle["model"]
     fi      = rf.feature_importances_
-    contrib = fi * np.abs(x_scaled[0])   # importance Ã— feature magnitude
+    contrib = fi * np.abs(x_scaled[0])   # importance Ã- feature magnitude
     top_idx = np.argsort(contrib)[::-1][:n]
 
     return [

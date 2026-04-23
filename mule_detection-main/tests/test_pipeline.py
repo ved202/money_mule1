@@ -30,7 +30,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# ── Minimal synthetic data fixtures ──────────────────────────────────────────
+# -- Minimal synthetic data fixtures ------------------------------------------
 
 def make_mini_transactions(n: int = 200, fraud_rate: float = 0.10) -> pd.DataFrame:
     """Create a tiny transaction DataFrame for fast unit testing."""
@@ -499,7 +499,7 @@ class TestIntegration(unittest.TestCase):
     def test_full_pipeline_smoke(self):
         """
         Smoke test: verify the pipeline runs without errors on minimal data.
-        Does NOT check metric values — just that nothing crashes.
+        Does NOT check metric values - just that nothing crashes.
         """
         from src.ingestion.data_generator     import generate_synthetic_dataset
         from src.graph.graph_builder           import build_transaction_graph
@@ -539,11 +539,11 @@ class TestIntegration(unittest.TestCase):
         print("\n  [Integration] Full smoke test PASSED")
 
 
-# ── Standalone test runner ────────────────────────────────────────────────────
+# -- Standalone test runner ----------------------------------------------------
 
 if __name__ == "__main__":
     print("=" * 65)
-    print("  MULE DETECTION — UNIT & INTEGRATION TEST SUITE")
+    print("  MULE DETECTION - UNIT & INTEGRATION TEST SUITE")
     print("=" * 65)
 
     loader = unittest.TestLoader()

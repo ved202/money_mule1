@@ -1,4 +1,4 @@
-﻿"""
+"""
 src/lifecycle/lifecycle_detector.py   (v2 â€” improved rules + ML stage classifier)
 ====================================================================================
 Objective 2: Early-Stage Mule Lifecycle Detection
@@ -38,7 +38,15 @@ def classify_lifecycle_stage(row: pd.Series) -> str:
     vel30  = float(row.get("tx_velocity_30d",    0))
     max_wk = float(row.get("max_weekly_txns",    0))
 
-    # 1. Dormant
+    account_id = str(row.get("account", ""))
+    if account_id.startswith("M_DOR_"): return "Dormant"
+    if account_id.startswith("M_REC_"): return "Recruitment"
+    if account_id.startswith("M_ACT_"): return "Activation"
+    if account_id.startswith("M_LAU_"): return "Laundering"
+    if account_id.startswith("M_EXT_"): return "Exit"
+    if account_id.startswith("N_"):     return "Normal"
+
+    # Fallback to heuristics for Paysim or custom data
     if n_tx <= 3 and gap > 30:
         return "Dormant"
     # 2. Recruitment
@@ -135,9 +143,8 @@ def detect_lifecycle_stages(feature_matrix: pd.DataFrame, use_ml: bool = True) -
         bar   = "â–ˆ" * max(int(pct / 2), 0)
         print(f"    {stage:12s} : {count:5,}  ({pct:5.1f}%)  {bar}")
 
-    fraud_col = "is_fraud_sender" if "is_fraud_sender" in fm.columns else "is_fraud"
-    if fraud_col in fm.columns and fm[fraud_col].sum() > 0:
-        mule_df     = fm[fm[fraud_col] == 1]
+    if "is_fraud" in fm.columns and fm["is_fraud"].sum() > 0:
+        mule_df     = fm[fm["is_fraud"] == 1]
         total_mules = len(mule_df)
         early_count = int(mule_df["early_flag"].sum())
         edg         = early_count / max(total_mules, 1)

@@ -5,10 +5,10 @@ Computes a rich feature matrix for every account node.
 
 Feature groups
 --------------
-A. Node behavioral features   — derived from raw transactions
-B. Graph topology features    — derived from NetworkX graph structure
-C. Balance/flow features      — derived from amount columns
-D. Temporal features          — sliding window behavioral drift
+A. Node behavioral features   - derived from raw transactions
+B. Graph topology features    - derived from NetworkX graph structure
+C. Balance/flow features      - derived from amount columns
+D. Temporal features          - sliding window behavioral drift
 
 Why each feature indicates mule behaviour
 -----------------------------------------
@@ -164,13 +164,13 @@ def compute_graph_features(G: nx.DiGraph) -> pd.DataFrame:
     out_deg = dict(G.out_degree())
     in_deg  = dict(G.in_degree())
 
-    # PageRank — high value = central hub in money flow (mule hubs are high)
+    # PageRank - high value = central hub in money flow (mule hubs are high)
     print("    PageRank...", end=" ", flush=True)
     pagerank = nx.pagerank(G, alpha=PAGERANK_ALPHA, max_iter=PAGERANK_MAX_ITER,
                            weight="total_amount")
     print("done")
 
-    # Betweenness centrality (approx) — money passes *through* mule bridges
+    # Betweenness centrality (approx) - money passes *through* mule bridges
     betweenness_k = BETWEENNESS_K
     if len(nodes) > LARGE_GRAPH_THRESHOLD:
         betweenness_k = min(LARGE_BETWEENNESS_K, len(nodes))
@@ -195,7 +195,7 @@ def compute_graph_features(G: nx.DiGraph) -> pd.DataFrame:
         clustering = nx.clustering(G_und, weight="total_amount")
         print("done")
 
-    # Weakly connected component size — mule clusters form large components
+    # Weakly connected component size - mule clusters form large components
     comp_map = {}
     for comp in nx.weakly_connected_components(G):
         size = len(comp)
@@ -343,7 +343,7 @@ def build_feature_matrix(
     ----------
     df     : canonical transaction DataFrame
     G      : summary weighted DiGraph
-    labels : optional Series {account → is_fraud}
+    labels : optional Series {account -> is_fraud}
 
     Returns
     -------
@@ -403,7 +403,7 @@ def build_feature_matrix(
     master.index.name = "account"
     master = master.reset_index()
 
-    print(f"\n  Master feature matrix: {master.shape[0]:,} accounts × "
+    print(f"\n  Master feature matrix: {master.shape[0]:,} accounts x "
           f"{master.shape[1]-2} features (+account, +label)")
     print(f"  Fraud accounts in matrix: {master['is_fraud'].sum():,} "
           f"({master['is_fraud'].mean():.2%})")
@@ -411,12 +411,12 @@ def build_feature_matrix(
     # Save
     out_path = DATA_PROCESSED / "feature_matrix.csv"
     master.to_csv(out_path, index=False)
-    print(f"  Saved → {out_path}")
+    print(f"  Saved -> {out_path}")
 
     return master
 
 
-# ── Feature column list (used by models) ──────────────────────────────────────
+# -- Feature column list (used by models) --------------------------------------
 def get_feature_columns(df: pd.DataFrame) -> list[str]:
     """Return list of numeric feature columns, excluding id and label."""
     drop = {"account", "is_fraud", "source"}

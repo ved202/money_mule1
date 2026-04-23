@@ -4,10 +4,10 @@
 
 â”€â”€ MODEL PERFORMANCE (test set) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
            Model  Precision  Recall     F1  PR-AUC  ROC-AUC
- IsolationForest     0.9980  0.1610 0.2772  0.9519   0.9331
+ IsolationForest     1.0000  0.1613 0.2778  0.9608   0.9456
     RandomForest     1.0000  0.8065 0.8929  1.0000   1.0000
-GradientBoosting     0.9929  0.9964 0.9946  0.9905   0.9973
-        GNN-SAGE     1.0000  1.0000 1.0000  1.0000   1.0000
+GradientBoosting     0.9929  0.9964 0.9946  0.9903   0.9968
+        GNN-SAGE     0.9979  1.0000 0.9989  1.0000   1.0000
 
 â”€â”€ RECOMMENDED MODEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Best validation model : RandomForest (PR-AUC=1.0000, ROC-AUC=1.0000)
@@ -15,15 +15,15 @@ GradientBoosting     0.9929  0.9964 0.9946  0.9905   0.9973
 
 â”€â”€ EARLY DETECTION (Objective 2) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Total mule accounts      : 3,100
-  Caught at early stage    : 3,100
-  Early Detection Gain     : 100.00%
-  Stage distribution       : {'Recruitment': 1891, 'Activation': 1209}
+  Caught at early stage    : 1,250
+  Early Detection Gain     : 40.32%
+  Stage distribution       : {'Activation': 650, 'Laundering': 650, 'Dormant': 600, 'Exit': 600, 'Recruitment': 600}
   Status                   : heuristic
   Interpretation           : Treat lifecycle output as heuristic until separately validated.
 
 â”€â”€ COMMUNITY DETECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  Suspicious communities   : 92
-  Community recall         : 99.94%
+  Suspicious communities   : 95
+  Community recall         : 100.00%
 
 â”€â”€ SUSPICIOUS ACCOUNT SUMMARY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  Total suspicious accounts: 3,590
+  Total suspicious accounts: 3,100
