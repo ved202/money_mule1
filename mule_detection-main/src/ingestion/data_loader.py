@@ -1,4 +1,4 @@
-﻿"""
+"""
 src/ingestion/data_loader.py
 =============================
 Loads transaction data from any supported source and normalises it

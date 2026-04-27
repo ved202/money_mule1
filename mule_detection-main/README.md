@@ -118,7 +118,7 @@ python3 main_pipeline.py --source paysim --path data/raw/paysim.csv --sample 100
 
 ### Choose GNN architecture
 ```bash
-python3 main_pipeline.py --source paysim --path data/raw/paysim.csv --sample 100000 --with-gnn --gnn-model sage
+
 python3 main_pipeline.py --source paysim --path data/raw/paysim.csv --sample 100000 --with-gnn --gnn-model gat
 ```
 
@@ -357,3 +357,4 @@ flowchart LR
     linkStyle 0,1,2,3,4,5,6 stroke:#94a3b8,stroke-width:1.5px;
     linkStyle 7,8,9,10,11 stroke:#334155,stroke-width:2.5px;
 ```
+python run_test_data.py

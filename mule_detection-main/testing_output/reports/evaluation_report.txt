@@ -4,10 +4,10 @@
 
 â”€â”€ MODEL PERFORMANCE (test set) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
            Model  Precision  Recall     F1  PR-AUC  ROC-AUC
- IsolationForest      0.994  0.1282 0.2271  0.8462    0.529
-    RandomForest      1.000  0.9981 0.9990  1.0000    1.000
-GradientBoosting      1.000  1.0000 1.0000  1.0000    1.000
-        GNN-SAGE      1.000  0.8625 0.9262  1.0000    1.000
+ IsolationForest      0.996  0.1284 0.2276  0.8442   0.5176
+    RandomForest      1.000  0.9981 0.9990  1.0000   1.0000
+GradientBoosting      1.000  1.0000 1.0000  1.0000   1.0000
+        GNN-SAGE      1.000  0.8625 0.9262  1.0000   1.0000
 
 â”€â”€ RECOMMENDED MODEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Best validation model : RandomForest (PR-AUC=1.0000, ROC-AUC=1.0000)
